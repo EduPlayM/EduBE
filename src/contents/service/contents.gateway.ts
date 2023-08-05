@@ -51,7 +51,10 @@ export class ContentsGateway {
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
     console.log('Received answer: ', answerData);
+
+    /* 클라에서 보내주긴 해야 함. socket = io( ) -> extraHeaders */
     // client.handshake.headers.authorization
+
     const quizzes = this.clientQuizzes.get(client.id); // 클라이언트 ID에 해당하는 퀴즈 배열 가져오기
     const topicId = this.clientTopics.get(client.id);
     /* 레벨 업그레이드 */
