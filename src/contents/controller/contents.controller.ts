@@ -8,7 +8,7 @@ export class ContentsController {
   constructor(
     private contentsService: ContentsService,
     private authService: AuthService,
-  ) {}
+  ) { }
 
   @Get()
   async getAllFiles() {
@@ -19,7 +19,7 @@ export class ContentsController {
           id: file.id,
           name: file.name,
           url: `https://d1gvhezy2xavcm.cloudfront.net/${file.name}_variant.m3u8`,
-          thumbnailUrl: `https://d1gvhezy2xavcm.cloudfront.net/${file.name}_view.m3u8`,
+          thumbnailUrl: `https://d1gvhezy2xavcm.cloudfront.net/${file.name}_views.m3u8`,
           length: file.length,
           quiz: quiz.quiz,
         };
@@ -28,11 +28,11 @@ export class ContentsController {
   }
 
   // 헤더 토큰 Id를 읽어서 level별 토픽 및 영상 전송
-  // @UseGuards(AuthGuard)
-  @Get('/level/:level')
-  async getFilesByUserLevel(@Param('level') level: number) {
-    // const userId = req.user.sub; // AuthGuard를 통해 얻은 사용자 ID
-    // const level = await this.authService.getUserLevel(userId);
+  @UseGuards(AuthGuard)
+  @Get('/level')
+  async getFilesByUserLevel(@Request() req) {
+    const userId = req.user.sub; // AuthGuard를 통해 얻은 사용자 ID
+    const level = await this.authService.getUserLevel(userId);
     const topicIds = await this.contentsService.findTopicsByLevel(level);
     console.log('fr: ', topicIds);
 
@@ -53,7 +53,7 @@ export class ContentsController {
           return {
             name: file.name,
             url: `https://d1gvhezy2xavcm.cloudfront.net/${file.name}_variant.m3u8`,
-            thumbnailUrl: `https://d1gvhezy2xavcm.cloudfront.net/${file.name}_view.m3u8`,
+            thumbnailUrl: `https://d1gvhezy2xavcm.cloudfront.net/${file.name}_views.m3u8`,
             length: file.length,
             quiz: newQuiz.quiz,
           };

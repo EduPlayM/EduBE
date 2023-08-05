@@ -21,8 +21,11 @@ export class ContentsGateway {
   @InjectRepository(Topic) private topicRepo: Repository<Topic>;
   @InjectRepository(User) private userRepo: Repository<User>;
 
-  constructor(private contentsService: ContentsService) {}
+  constructor(private contentsService: ContentsService) { }
 
+  /* client map은 정석이 아님. DB에 저장하고 가져오는 게 맞음. 휘발성 없어져도 되는 데이터 아니면.  */
+  /* client.id보다는 user id가 맞음. 이번엔 room id나. 공유를 하기 때문에 더욱 DB를 써야 함. 
+    상태저장(소켓 연결 끊기면 퀴즈 풀던거 날아가면 X) ** 레포지토리 패턴 덕에 편함. 인스턴스 늘어나는 상황은 도와달라고 해야 함. */
   private currentQuizIndex = new Map<string, number>(); // quizzes 배열 인덱스
   private clientQuizzes = new Map<string, Quiz[]>(); // quizzes 배열 자체
   private clientTopics = new Map<string, number>(); // 클라이언트 별 topicId 저장
@@ -48,7 +51,7 @@ export class ContentsGateway {
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
     console.log('Received answer: ', answerData);
-
+    // client.handshake.headers.authorization
     const quizzes = this.clientQuizzes.get(client.id); // 클라이언트 ID에 해당하는 퀴즈 배열 가져오기
     const topicId = this.clientTopics.get(client.id);
     /* 레벨 업그레이드 */
@@ -79,7 +82,7 @@ export class ContentsGateway {
                 'levelUp',
                 '고객님의 레벨이 Level 3로 업그레이드 되었습니다, 축하합니다!',
               );
-              user.level = 2;
+              user.level = 3;
             }
           } else {
             user.matchedNum -= 1;
